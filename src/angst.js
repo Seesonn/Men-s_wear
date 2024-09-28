@@ -1,8 +1,7 @@
-
-
-import React, { useState, useEffect, useRef } from 'react'
-import { Menu, X, ShoppingBag, ChevronRight, Mail, Phone, MapPin, User } from 'lucide-react'
+import React, { useState, useEffect } from 'react'
+import { Menu, X, ShoppingBag, ChevronRight, Mail, Phone, MapPin, User, Star, Heart, Search, Home, ShoppingCart, Info, Contact } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
+
 
 
 
@@ -42,10 +41,10 @@ const categories = [
   { name: 'Tops', img: c2, description: 'Rebellious shirts and tops for any occasion' },
   { name: 'Bottoms', img: c3, description: 'Daring pants and skirts to complete your look' },
   { name: 'Footwear', img: c4, description: 'Bold boots and shoes to stomp in style' },
-  { name: 'Accessories', img: c5, description: 'Edgy accessories to accent your attitude' }
-]
+  { name: 'Accessories', img: c5, description: 'Edgy accessories to accent your attitude'} 
+  ]
 
-export default function HomePage() {
+export default function Component() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isCartOpen, setIsCartOpen] = useState(false)
   const [isLoginOpen, setIsLoginOpen] = useState(false)
@@ -59,6 +58,11 @@ export default function HomePage() {
   const [loginError, setLoginError] = useState('')
   const [signupError, setSignupError] = useState('')
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [searchResults, setSearchResults] = useState([])
+  const [isSearchOpen, setIsSearchOpen] = useState(false)
+  const topSearchProducts = products.slice(0, 4)
+  const recommendedProducts = products.slice(2, 6)
 
   useEffect(() => {
     const storedUsers = localStorage.getItem('users')
@@ -71,26 +75,39 @@ export default function HomePage() {
       setIsLoggedIn(true)
       setUserEmail(email)
     }
+    const storedCart = localStorage.getItem('cart')
+    if (storedCart) {
+      setCart(JSON.parse(storedCart))
+    }
   }, [])
+
+  useEffect(() => {
+    localStorage.setItem('cart', JSON.stringify(cart))
+  }, [cart])
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
 
   const addToCart = (product) => {
-    setCart([...cart, { ...product, cartId: Date.now() }])
+    const newCart = [...cart, { ...product, cartId: Date.now() }]
+    setCart(newCart)
+    localStorage.setItem('cart', JSON.stringify(newCart))
   }
 
   const removeFromCart = (cartId) => {
-    const index = cart.findIndex(item => item.cartId === cartId)
-    if (index !== -1) {
-      const newCart = [...cart]
-      newCart.splice(index, 1)
-      setCart(newCart)
-    }
+    const newCart = cart.filter(item => item.cartId !== cartId)
+    setCart(newCart)
+    localStorage.setItem('cart', JSON.stringify(newCart))
   }
 
   const placeOrder = () => {
+    if (!isLoggedIn) {
+      alert('Please log in to place an order.')
+      openLogin()
+      return
+    }
     alert('Order placed successfully!')
     setCart([])
+    localStorage.removeItem('cart')
     setIsCartOpen(false)
   }
 
@@ -183,14 +200,37 @@ export default function HomePage() {
     setIsUserMenuOpen(!isUserMenuOpen)
   }
 
-  const topSearchProducts = products.slice(0, 4)
-  const recommendedProducts = products.slice(2, 6)
+// ... (state declarations remain the same)
 
+  const handleSearch = (e) => {
+    const query = e.target.value
+    setSearchQuery(query)
+    if (query.trim() === '') {
+      setIsSearchOpen(false)
+      setSearchResults([])
+    } else {
+      const results = products.filter(product =>
+        product.name.toLowerCase().includes(query.toLowerCase()) ||
+        product.description.toLowerCase().includes(query.toLowerCase()) ||
+        product.category.toLowerCase().includes(query.toLowerCase())
+      )
+      setSearchResults(results)
+      setIsSearchOpen(true)
+    }
+  }
+
+  // ... (other functions remain the same)
+  useEffect(() => {
+    if (searchQuery === '') {
+      setIsSearchOpen(false)
+    }
+  }, [searchQuery])
   return (
     <div className="min-h-screen bg-gray-100 text-gray-900 font-sans overflow-x-hidden">
       {/* Header */}
-      <header className="bg-gray-900 shadow-md sticky top-0 z-10">
+      <header className="bg-gray-900 shadow-md fixed top-0 left-0 right-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+          {/* ... (header content remains the same) */}
           <h1 className="text-2xl font-bold text-white">SISANWear</h1>
           <nav className="hidden md:flex space-x-4">
             <button onClick={() => scrollToSection('home')} className="text-gray-300 hover:text-white transition-colors">Home</button>
@@ -199,13 +239,19 @@ export default function HomePage() {
             <button onClick={() => scrollToSection('contact')} className="text-gray-300 hover:text-white transition-colors">Contact</button>
           </nav>
           <div className="flex items-center">
-            <button
-              className="bg-white text-gray-900 px-4 py-2 rounded-md hover:bg-gray-200 transition-colors mr-2"
-              onClick={() => setIsCartOpen(true)}
-            >
-              <ShoppingBag className="h-6 w-6 inline-block mr-2" />
-              <span>{cart.length}</span>
-            </button>
+            <div className="relative mr-4">
+              <input
+                type="text"
+                placeholder="Search..."
+                value={searchQuery}
+                onChange={handleSearch}
+                className="bg-gray-800 text-white px-4 py-2 rounded-full focus:outline-none focus:ring-2 focus:ring-white w-full md:w-auto"
+              />
+              <button type="submit" className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                <button className="h-5 w-5 text-gray-400" />
+              </button>
+            </div>
+            {/* ... (rest of the header content remains the same) */}
             {isLoggedIn ? (
               <div className="relative">
                 <button
@@ -223,7 +269,7 @@ export default function HomePage() {
                       onClick={handleLogout}
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
                     >
-                      <button className="inline-block mr-2" size={16} />
+                      <User className="inline-block mr-2" size={16} />
                       Logout
                     </button>
                   </div>
@@ -246,6 +292,7 @@ export default function HomePage() {
             </button>
           </div>
         </div>
+        {/* ... (mobile menu remains the same) */}
         <AnimatePresence>
           {isMenuOpen && (
             <motion.div
@@ -256,10 +303,22 @@ export default function HomePage() {
               className="md:hidden bg-gray-800 overflow-hidden"
             >
               <div className="px-2 pt-2 pb-3 space-y-1">
-                <button onClick={() => scrollToSection('home')} className="block w-full px-3 py-2 rounded-md text-base font-medium text-white hover:bg-gray-700 transition-colors text-left">Home</button>
-                <button onClick={() => scrollToSection('shop')} className="block w-full px-3 py-2 rounded-md text-base font-medium text-white hover:bg-gray-700 transition-colors text-left">Shop</button>
-                <button onClick={() => scrollToSection('about')} className="block w-full px-3 py-2 rounded-md text-base font-medium text-white hover:bg-gray-700 transition-colors text-left">About</button>
-                <button onClick={() => scrollToSection('contact')} className="block w-full px-3 py-2 rounded-md text-base font-medium text-white hover:bg-gray-700 transition-colors text-left">Contact</button>
+                <button onClick={() => scrollToSection('home')} className="flex items-center w-full px-3 py-2 rounded-md text-base font-medium text-white hover:bg-gray-700 transition-colors">
+                  <Home className="h-5 w-5 mr-2" />
+                  Home
+                </button>
+                <button onClick={() => scrollToSection('shop')} className="flex items-center w-full px-3 py-2 rounded-md text-base font-medium text-white hover:bg-gray-700 transition-colors">
+                  <ShoppingCart className="h-5 w-5 mr-2" />
+                  Shop
+                </button>
+                <button onClick={() => scrollToSection('about')} className="flex items-center w-full px-3 py-2 rounded-md text-base font-medium text-white hover:bg-gray-700 transition-colors">
+                  <Info className="h-5 w-5 mr-2" />
+                  About
+                </button>
+                <button onClick={() => scrollToSection('contact')} className="flex items-center w-full px-3 py-2 rounded-md text-base font-medium text-white hover:bg-gray-700 transition-colors">
+                  <Contact className="h-5 w-5 mr-2" />
+                  Contact
+                </button>
               </div>
             </motion.div>
           )}
@@ -267,13 +326,14 @@ export default function HomePage() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+         {/* Main Content */}
+         <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 mt-20">
         <div className="px-4 py-6 sm:px-0">
           {/* Home Section */}
           <div id="home" className="relative mb-12">
             <img
               src={home}
-              alt="Angst Redefined"
+              alt=" Redefined"
               className="w-full h-auto rounded-lg"
               width={1200}
               height={600}
@@ -307,9 +367,8 @@ export default function HomePage() {
               </div>
             ))}
           </section>
-
-          {/* Top Search Products Section */}
-          <section className="mb-12">
+             {/* Top Search Products Section */}
+             <section className="mb-12">
             <h2 className="text-xl sm:text-2xl font-semibold mb-6 text-gray-900">Top Search Products</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {topSearchProducts.map((product) => (
@@ -354,6 +413,7 @@ export default function HomePage() {
             </div>
           </section>
 
+
           {/* About Section */}
           <section id="about" className="mb-12 bg-white rounded-lg shadow-md p-6 sm:p-20">
             <h2 className="text-xl sm:text-2xl font-semibold mb-4 text-gray-900">About Us</h2>
@@ -363,19 +423,6 @@ export default function HomePage() {
             <p className="text-gray-700">
               With years of experience in alternative fashion, our team of experts carefully selects each item in our inventory to ensure that we're offering the latest underground trends and timeless punk classics that will fuel your rebellion for years to come.
             </p>
-          </section>
-
-          {/* Why Choose Us Section */}
-          <section className="mb-12 bg-white rounded-lg shadow-md p-6 sm:p-20">
-            <h2 className="text-xl sm:text-2xl font-semibold mb-4 text-gray-900">Why Choose Us</h2>
-            <ul className="list-disc list-inside space-y-2 text-gray-700">
-              <li>Curated selection of high-quality alternative fashion</li>
-              <li>Expert style advice for the perfect rebellious look</li>
-              <li>Competitive prices on top underground brands</li>
-              <li>Easy returns and exchanges</li>
-              <li>Fast and reliable shipping</li>
-              <li>Regular promotions and discounts for our loyal misfits</li>
-            </ul>
           </section>
 
           {/* Contact Section */}
@@ -391,7 +438,7 @@ export default function HomePage() {
                     <Phone className="mr-2" /> 9844354444
                   </p>
                   <p className="flex items-center text-gray-700">
-                    <MapPin className="mr-2" />  Salakpur, Morang
+                    <MapPin className="mr-2" /> Salakpur, Morang
                   </p>
                 </div>
                 <form className="space-y-4">
@@ -406,8 +453,8 @@ export default function HomePage() {
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="bg-gray-900 mt-12 py-8 text-white">
+     {/* Footer */}
+     <footer className="bg-gray-900 mt-12 py-8 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-wrap justify-between">
             <div className="w-full md:w-1/4 mb-6 md:mb-0">
@@ -449,40 +496,296 @@ export default function HomePage() {
         </div>
       </footer>
 
-      {/* Category Products Popup */}
-      <AnimatePresence>
-        {selectedCategory && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center"
-            onClick={() => setSelectedCategory(null)}
-          >
-            <motion.div
-              initial={{ scale: 0.95 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 0.95 }}
-              onClick={(e) => e.stopPropagation()}
-              className="bg-white text-gray-900 p-6 rounded-lg w-full max-w-6xl max-h-[90vh] overflow-y-auto"
+      {/* Floating Cart */}
+      <div className="fixed bottom-4 right-4 z-50">
+        <button
+          className="bg-gray-900 text-white p-4 rounded-full shadow-lg hover:bg-gray-800 transition-colors"
+          onClick={() => setIsCartOpen(true)}
+        >
+          <ShoppingBag className="h-6 w-6" />
+          {cart.length > 0 && (
+            <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs">
+              {cart.length}
+            </span>
+          )}
+        </button>
+      </div>
+
+
+      {/* Popups */}
+      {/* Cart Popup */}
+      {isCartOpen && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="bg-white p-8 rounded-lg max-w-3xl w-full max-h-[80vh] overflow-y-auto">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold">Your Cart</h2>
+        <button
+          className="text-gray-500 hover:text-gray-700"
+          onClick={() => setIsCartOpen(false)}
+        >
+          <X className="h-6 w-6" />
+        </button>
+      </div>
+      {cart.length === 0 ? (
+        <p>Your cart is empty.</p>
+      ) : (
+        <>
+          {cart.map(item => (
+            <div key={item.cartId} className="flex items-center justify-between border-b py-2">
+              <div className="flex items-center">
+                <img src={item.img} alt={item.name} className="w-16 h-16 object-cover rounded mr-4" width={64} height={64} />
+                <div>
+                  <h3 className="font-semibold">{item.name}</h3>
+                  <p className="text-sm text-gray-600">₹{item.price.toLocaleString('en-IN')}</p>
+                </div>
+              </div>
+              <button
+                className="text-red-600 hover:text-red-800"
+                onClick={() => removeFromCart(item.cartId)}
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+          <div className="mt-4">
+            <p className="font-bold">Total: ₹{cart.reduce((sum, item) => sum + item.price, 0).toLocaleString('en-IN')}</p>
+            <button
+              className="mt-2 w-full bg-gray-900 text-white px-4 py-2 rounded-md hover:bg-gray-800 transition-colors"
+              onClick={placeOrder}
             >
+              Place Order
+            </button>
+          </div>
+        </>
+      )}
+    </div>
+  </div>
+)}
+
+
+     
+
+      {/* Login Popup */}
+      {isLoginOpen && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="bg-white p-8 rounded-lg max-w-md w-full">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold">Login</h2>
+        <button
+          className="text-gray-500 hover:text-gray-700"
+          onClick={() => setIsLoginOpen(false)}
+        >
+          <X className="h-6 w-6" />
+        </button>
+      </div>
+      <form onSubmit={handleLogin}>
+        <div className="mb-4">
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            required
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+          />
+        </div>
+        <div className="mb-4">
+          <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            required
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+          />
+        </div>
+        {loginError && <p className="text-red-500 mb-4">{loginError}</p>}
+        <button
+          type="submit"
+          className="w-full bg-gray-900 text-white px-4 py-2 rounded-md hover:bg-gray-800 transition-colors"
+        >
+          Login
+        </button>
+      </form>
+      <button onClick={openSignup} className="mt-4 text-sm text-gray-600 hover:text-gray-900">
+        Don't have an account? Sign up
+      </button>
+      <button onClick={openForgotPassword} className="mt-2 text-sm text-gray-600 hover:text-gray-900">
+        Forgot password?
+      </button>
+    </div>
+  </div>
+)}
+
+{isSignupOpen && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="bg-white p-8 rounded-lg max-w-md w-full">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold">Sign Up</h2>
+        <button
+          className="text-gray-500 hover:text-gray-700"
+          onClick={() => setIsSignupOpen(false)}
+        >
+          <X className="h-6 w-6" />
+        </button>
+      </div>
+      <form onSubmit={handleSignup}>
+        <div className="mb-4">
+          <label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            required
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+          />
+        </div>
+        <div className="mb-4">
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            required
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+          />
+        </div>
+        <div className="mb-4">
+          <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            required
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+          />
+        </div>
+        <div className="mb-4">
+          <label htmlFor="address" className="block text-sm font-medium text-gray-700">Address</label>
+          <textarea
+            id="address"
+            name="address"
+            required
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+          ></textarea>
+        </div>
+        {signupError && <p className="text-red-500 mb-4">{signupError}</p>}
+        <button
+          type="submit"
+          className="w-full bg-gray-900 text-white px-4 py-2 rounded-md hover:bg-gray-800 transition-colors"
+        >
+          Sign Up
+        </button>
+      </form>
+      <button onClick={openLogin} className="mt-4 text-sm text-gray-600 hover:text-gray-900">
+        Already have an account? Log in
+      </button>
+    </div>
+  </div>
+)}
+
+      {/* Forgot Password Popup */}
+      {isForgotPasswordOpen && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="bg-white p-8 rounded-lg max-w-md w-full">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold">Forgot Password</h2>
+        <button
+          className="text-gray-500 hover:text-gray-700"
+          onClick={() => setIsForgotPasswordOpen(false)}
+        >
+          <X className="h-6 w-6" />
+        </button>
+      </div>
+      <form>
+        <div className="mb-4">
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            required
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+          />
+        </div>
+        <button
+          type="submit"
+          className="w-full bg-gray-900 text-white px-4 py-2 rounded-md hover:bg-gray-800 transition-colors"
+        >
+          Reset Password
+        </button>
+      </form>
+      <button onClick={openLogin} className="mt-4 text-sm text-gray-600 hover:text-gray-900">
+        Back to Login
+      </button>
+    </div>
+  </div>
+)}
+
+
+      {/* Category Products Popup */}
+      {selectedCategory && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="bg-white p-8 rounded-lg max-w-3xl w-full max-h-[80vh] overflow-y-auto">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold">{selectedCategory} Products</h2>
+        <button
+          className="text-gray-500 hover:text-gray-700"
+          onClick={() => setSelectedCategory(null)}
+        >
+          <X className="h-6 w-6" />
+        </button>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {products
+          .filter(product => product.category === selectedCategory)
+          .map(product => (
+            <div key={product.id} className="border p-4 rounded-lg">
+              <img src={product.img} alt={product.name} width={300} height={200} className="w-full h-48 object-cover mb-2 rounded" />
+              <h3 className="font-semibold">{product.name}</h3>
+              <p className="text-sm text-gray-600 mb-2">{product.description}</p>
+              <p className="font-bold mb-2">₹{product.price.toLocaleString('en-IN')}</p>
+              <button
+                className="w-full bg-gray-900 text-white px-3 py-2 rounded-md hover:bg-gray-800 transition-colors"
+                onClick={() => addToCart(product)}
+              >
+                Add to Cart
+              </button>
+            </div>
+          ))}
+      </div>
+    </div>
+  </div>
+)}
+
+      {/* Search Results Popup */}
+      <AnimatePresence>
+        {isSearchOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-50 pt-20"
+          >
+            <div className="bg-white p-8 rounded-lg max-w-3xl w-full max-h-[80vh] overflow-y-auto">
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold text-gray-900">{selectedCategory} Products</h2>
+                <h2 className="text-2xl font-bold">Search Results</h2>
                 <button
-                  onClick={() => setSelectedCategory(null)}
-                  className="text-gray-600 hover:text-gray-900 transition-colors"
+                  className="text-gray-500 hover:text-gray-700"
+                  onClick={() => setIsSearchOpen(false)}
                 >
                   <X className="h-6 w-6" />
                 </button>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {products.filter(p => p.category === selectedCategory).map((product) => (
-                  <div key={product.id} className="bg-gray-100 rounded-lg shadow-md overflow-hidden">
-                    <img src={product.img} alt={product.name} className="w-full h-64 object-cover" width={300} height={200} />
-                    <div className="p-4">
-                      <h3 className="font-semibold text-lg mb-2 text-gray-800">{product.name}</h3>
-                      <p className="text-sm mb-2 text-gray-600">{product.description}</p>
-                      <p className="font-bold mb-2 text-gray-900">₹{product.price.toLocaleString('en-IN')}</p>
+              {searchResults.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {searchResults.map(product => (
+                    <div key={product.id} className="border p-4 rounded-lg">
+                      <img src={product.img} alt={product.name} width={300} height={200} className="w-full h-48 object-cover mb-2 rounded" />
+                      <h3 className="font-semibold">{product.name}</h3>
+                      <p className="text-sm text-gray-600 mb-2">{product.description}</p>
+                      <p className="font-bold mb-2">₹{product.price.toLocaleString('en-IN')}</p>
                       <button
                         className="w-full bg-gray-900 text-white px-3 py-2 rounded-md hover:bg-gray-800 transition-colors"
                         onClick={() => addToCart(product)}
@@ -490,221 +793,12 @@ export default function HomePage() {
                         Add to Cart
                       </button>
                     </div>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Cart Popup */}
-      <AnimatePresence>
-        {isCartOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center"
-            onClick={closeAllPopups}
-          >
-            <motion.div
-              initial={{ scale: 0.95 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 0.95 }}
-              onClick={(e) => e.stopPropagation()}
-              className="bg-white text-gray-900 p-6 rounded-lg max-w-md w-full max-h-[80vh] flex flex-col"
-            >
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold text-gray-900">Your Cart</h2>
-                <button
-                  onClick={() => setIsCartOpen(false)}
-                  className="text-gray-600 hover:text-gray-900 transition-colors"
-                >
-                  <X className="h-6 w-6" />
-                </button>
-              </div>
-              <div className="overflow-y-auto flex-grow mb-4">
-                {cart.length === 0 ? (
-                  <p className="text-center text-gray-600">Your cart is empty.</p>
-                ) : (
-                  cart.map((item) => (
-                    <div key={item.cartId} className="flex justify-between items-center mb-4">
-                      <div>
-                        <h3 className="font-semibold text-gray-800">{item.name}</h3>
-                        <p className="text-sm text-gray-600">₹{item.price.toLocaleString('en-IN')}</p>
-                      </div>
-                      <button
-                        className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition-colors"
-                        onClick={() => removeFromCart(item.cartId)}
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  ))
-                )}
-              </div>
-              <div className="border-t border-gray-200 pt-4">
-                <p className="font-semibold mb-4 text-gray-900">Total: ₹{cart.reduce((sum, item) => sum + item.price, 0).toLocaleString('en-IN')}</p>
-                <button
-                  className="w-full bg-gray-900 text-white px-4 py-2 rounded-md hover:bg-gray-800 transition-colors mb-2"
-                  onClick={placeOrder}
-                  disabled={cart.length === 0}
-                >
-                  Place Order
-                </button>
-                <button
-                  className="w-full bg-gray-200 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-300 transition-colors"
-                  onClick={() => setIsCartOpen(false)}
-                >
-                  Close
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Login Popup */}
-      <AnimatePresence>
-        {isLoginOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center"
-            onClick={closeAllPopups}
-          >
-            <motion.div
-              initial={{ scale: 0.95 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 0.95 }}
-              onClick={(e) => e.stopPropagation()}
-              className="bg-white text-gray-900 p-6 rounded-lg max-w-md w-full"
-            >
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold text-gray-900">Login</h2>
-                <button
-                  onClick={() => setIsLoginOpen(false)}
-                  className="text-gray-600 hover:text-gray-900 transition-colors"
-                >
-                  <X className="h-6 w-6" />
-                </button>
-              </div>
-              <form className="space-y-4" onSubmit={handleLogin}>
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
-                  <input type="email" id="email" name="email" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-gray-900 focus:ring focus:ring-gray-200 focus:ring-opacity-50" required />
+                  ))}
                 </div>
-                <div>
-                  <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
-                  <input type="password" id="password" name="password" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-gray-900 focus:ring focus:ring-gray-200 focus:ring-opacity-50" required />
-                </div>
-                {loginError && <p className="text-red-500 text-sm">{loginError}</p>}
-                <button type="submit" className="w-full bg-gray-900 text-white px-4 py-2 rounded-md hover:bg-gray-800 transition-colors">Login</button>
-              </form>
-              <div className="mt-4 text-center">
-                <button onClick={openForgotPassword} className="text-gray-600 hover:text-gray-900 transition-colors">Forgot password?</button>
-              </div>
-              <div className="mt-4 text-center">
-                <p>Don't have an account? <button onClick={openSignup} className="text-gray-600 hover:text-gray-900 transition-colors">Sign up</button></p>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Signup Popup */}
-      <AnimatePresence>
-        {isSignupOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center"
-            onClick={closeAllPopups}
-          >
-            <motion.div
-              initial={{ scale: 0.95 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 0.95 }}
-              onClick={(e) => e.stopPropagation()}
-              className="bg-white text-gray-900 p-6 rounded-lg max-w-md w-full"
-            >
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold text-gray-900">Sign Up</h2>
-                <button
-                  onClick={() => setIsSignupOpen(false)}
-                  className="text-gray-600 hover:text-gray-900 transition-colors"
-                >
-                  <X className="h-6 w-6" />
-                </button>
-              </div>
-              <form className="space-y-4" onSubmit={handleSignup}>
-                <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>
-                  <input type="text" id="name" name="name" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-gray-900 focus:ring focus:ring-gray-200 focus:ring-opacity-50" required />
-                </div>
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
-                  <input type="email" id="email" name="email" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-gray-900 focus:ring focus:ring-gray-200 focus:ring-opacity-50" required />
-                </div>
-                <div>
-                  <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
-                  <input type="password" id="password" name="password" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-gray-900 focus:ring focus:ring-gray-200 focus:ring-opacity-50" required />
-                </div>
-                <div>
-                  <label htmlFor="address" className="block text-sm font-medium text-gray-700">Address</label>
-                  <input type="text" id="address" name="address" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-gray-900 focus:ring focus:ring-gray-200 focus:ring-opacity-50" required />
-                </div>
-                {signupError && <p className="text-red-500 text-sm">{signupError}</p>}
-                <button type="submit" className="w-full bg-gray-900 text-white px-4 py-2 rounded-md hover:bg-gray-800 transition-colors">Sign Up</button>
-              </form>
-              <div className="mt-4 text-center">
-                <p>Already have an account? <button onClick={openLogin} className="text-gray-600 hover:text-gray-900 transition-colors">Login</button></p>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Forgot Password Popup */}
-      <AnimatePresence>
-        {isForgotPasswordOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center"
-            onClick={closeAllPopups}
-          >
-            <motion.div
-              initial={{ scale: 0.95 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 0.95 }}
-              onClick={(e) => e.stopPropagation()}
-              className="bg-white text-gray-900 p-6 rounded-lg max-w-md w-full"
-            >
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold text-gray-900">Forgot Password</h2>
-                <button
-                  onClick={() => setIsForgotPasswordOpen(false)}
-                  className="text-gray-600 hover:text-gray-900 transition-colors"
-                >
-                  <X className="h-6 w-6" />
-                </button>
-              </div>
-              <form className="space-y-4">
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
-                  <input type="email" id="email" name="email" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-gray-900 focus:ring focus:ring-gray-200 focus:ring-opacity-50" required />
-                </div>
-                <button type="submit" className="w-full bg-gray-900 text-white px-4 py-2 rounded-md hover:bg-gray-800 transition-colors">Reset Password</button>
-              </form>
-              <div className="mt-4 text-center">
-                <button onClick={openLogin} className="text-gray-600 hover:text-gray-900 transition-colors">Back to Login</button>
-              </div>
-            </motion.div>
+              ) : (
+                <p className="text-center text-gray-600">No results found</p>
+              )}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
