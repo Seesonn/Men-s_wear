@@ -27,7 +27,7 @@ const products = [
   { id: 2, name: ' Black Cotton Jeans', category: 'Bottoms', price: 7999, img: p2, description: 'Sleek black jeans and  dusty pant graded angst ' },
   { id: 3, name: 'Spiked Leather Choker', category: 'Accessories', price: 2499, img: p3, description: 'Bold leather choker with metal spikes and tond' },
   { id: 4, name: 'Studded Combat Boots', category: 'Footwear', price: 12999, img: p4, description: 'Heavy-duty boots with silver studs and duty' },
-  { id: 5, name: 'Vintage Shirt', category: 'Tops', price: 3999, img: p5, description: 'Vintage-style t-shirt with punk rock graphics' },
+  { id: 5, name: 'Vintage Shirt', category: 'Tops', price: 3999, img: p5, description: 'Vintage-style t-shirt with punk rock graphics sisan printed' },
   { id: 6, name: 'Leather Biker Jacket', category: 'Outerwear', price: 24999, img: p1, description: 'Classic biker jacket in genuine leather and thst' },
   { id: 7, name: 'Sisan Sweetshirt', category: 'Tops', price: 1200, img: p7, description: 'Made from a blend of breathable cotton and polyester ' },
   { id: 8, name: ' Sisan Sweetshirt', category: 'Tops', price: 1200, img: p8, description: 'Made from a blend of breathable cotton and polyester ' },
@@ -37,11 +37,11 @@ const products = [
 ]
 
 const categories = [
-  { name: 'Outerwear', img: c1, description: 'Edgy jackets and coats to make a statement' },
-  { name: 'Tops', img: c2, description: 'Rebellious shirts and tops for any occasion' },
-  { name: 'Bottoms', img: c3, description: 'Daring pants and skirts to complete your look' },
-  { name: 'Footwear', img: c4, description: 'Bold boots and shoes to stomp in style' },
-  { name: 'Accessories', img: c5, description: 'Edgy accessories to accent your attitude'} 
+  { name: 'Outerwear', img: c1, description: 'Elevate your style with our collection of edgy jackets and coats, designed to make a bold statement wherever you go, from sleek leather bombers to oversized denim jackets, each piece combines attitude and artistry for a truly unique look.' },
+  { name: 'Tops', img: c2, description: 'Unleash your inner rebel with our collection of shirts and tops that defy conventionExplore a variety of styles that effortlessly blend comfort with attitude, perfect for everything from casual outings to nightlife adventures. With bold prints, unexpected details, and a mix of textures, our rebellious shirts and tops empower you to express your unique style for any occasion.' },
+  { name: 'Bottoms', img: c3, description: 'Explore our curated selection of men’s bottoms designed to offer style, comfort, and versatility for every occasion. Whether you’re dressing up for a night out or keeping it casual on the weekend, our collection has something for everyone.Whatever your style, our men’s bottoms are designed to fit seamlessly into your lifestyle. Mix and match with our top collections to create looks that reflect your unique personality and taste!' },
+  { name: 'Footwear', img: c4, description: 'Step into the spotlight with our collection of bold boots and shoes, designed for those who dare to make a statement. Whether you’re looking for something edgy for a night out or versatile pieces for everyday wear, our footwear range combines style, comfort, and attitude.No matter the occasion, our bold boots and shoes are crafted to empower your style. Pair them with your favorite outfits and let your footwear do the talking!' },
+  { name: 'Accessories', img: c5, description: 'Elevate your look with our collection of edgy accessories designed for the modern man who isn’t afraid to express his individuality. From statement pieces to subtle details, these accessories add a touch of attitude and flair to any outfit.'} 
   ]
 
 export default function Component() {
