@@ -24,7 +24,7 @@ import home from "./assets/home.png"
 
 const products = [
   { id: 1, name: 'Distressed Denim Jacket', category: 'Outerwear', price: 15999, img: p6, description: 'Edgy denim jacket with intentional distressing' },
-  { id: 2, name: ' Black Cotton Jeans', category: 'Bottoms', price: 7999, img: p2, description: 'Sleek black jeans and  dusty graded angst ' },
+  { id: 2, name: ' Black Cotton Jeans', category: 'Bottoms', price: 7999, img: p2, description: 'Sleek black jeans and  dusty pant graded angst ' },
   { id: 3, name: 'Spiked Leather Choker', category: 'Accessories', price: 2499, img: p3, description: 'Bold leather choker with metal spikes and tond' },
   { id: 4, name: 'Studded Combat Boots', category: 'Footwear', price: 12999, img: p4, description: 'Heavy-duty boots with silver studs and duty' },
   { id: 5, name: 'Vintage Shirt', category: 'Tops', price: 3999, img: p5, description: 'Vintage-style t-shirt with punk rock graphics' },
@@ -149,6 +149,8 @@ export default function Component() {
     }
     setIsMenuOpen(false)
   }
+  
+ 
 
   const handleLogin = (e) => {
     e.preventDefault()
@@ -230,8 +232,8 @@ export default function Component() {
       {/* Header */}
       <header className="bg-gray-900 shadow-md fixed top-0 left-0 right-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-          {/* ... (header content remains the same) */}
-          <h1 className="text-2xl font-bold text-white">SISANWear</h1>
+       
+          <h1 className="text-2xl font-bold text-white">MortalMen</h1>
           <nav className="hidden md:flex space-x-4">
             <button onClick={() => scrollToSection('home')} className="text-gray-300 hover:text-white transition-colors">Home</button>
             <button onClick={() => scrollToSection('shop')} className="text-gray-300 hover:text-white transition-colors">Shop</button>
@@ -251,7 +253,7 @@ export default function Component() {
                 <button className="h-5 w-5 text-gray-400" />
               </button>
             </div>
-            {/* ... (rest of the header content remains the same) */}
+          
             {isLoggedIn ? (
               <div className="relative">
                 <button
@@ -292,7 +294,7 @@ export default function Component() {
             </button>
           </div>
         </div>
-        {/* ... (mobile menu remains the same) */}
+      
         <AnimatePresence>
           {isMenuOpen && (
             <motion.div
@@ -326,7 +328,7 @@ export default function Component() {
       </header>
 
       {/* Main Content */}
-         {/* Main Content */}
+        
          <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 mt-20">
         <div className="px-4 py-6 sm:px-0">
           {/* Home Section */}
@@ -340,7 +342,7 @@ export default function Component() {
               layout="responsive"
             />
             <div className="absolute inset-0 flex flex-col justify-center items-start p-4 sm:p-8 bg-black bg-opacity-50 rounded-lg">
-              <h2 className="text-2xl sm:text-4xl font-bold mb-2 sm:mb-4 text-white">Sisan Redefined:</h2>
+              <h2 className="text-2xl sm:text-4xl font-bold mb-2 sm:mb-4 text-white">  MortalMen Redefined:</h2>
               <p className="text-lg sm:text-xl mb-2 sm:mb-4 text-gray-200">Shop Fashion that Screams Rebellion, Number 1 in Attitude</p>
               <button className="bg-gray-900 text-white px-4 sm:px-6 py-2 rounded-md hover:bg-gray-800 transition-colors">Shop now</button>
             </div>
@@ -491,7 +493,7 @@ export default function Component() {
             </div>
           </div>
           <div className="mt-8 border-t border-gray-800 pt-8 text-center">
-            <p className="text-sm text-gray-400">© 2024 SISANWear. All rights reserved.</p>
+            <p className="text-sm text-gray-400">© 2024 SISAN. All rights reserved.</p>
           </div>
         </div>
       </footer>
