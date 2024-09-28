@@ -341,7 +341,7 @@ export default function Component() {
               height={600}
               layout="responsive"
             />
-            <div className="absolute inset-0 flex flex-col justify-center items-start p-4 sm:p-8 bg-black bg-opacity-50 rounded-lg">
+            <div className="absolute inset-0 flex flex-col justify-center items-start p-4 sm:p-8 bg-black bg-opacity-20 rounded-lg">
               <h2 className="text-2xl sm:text-4xl font-bold mb-2 sm:mb-4 text-white">  MortalMen Redefined:</h2>
               <p className="text-lg sm:text-xl mb-2 sm:mb-4 text-gray-200">Shop Fashion that Screams Rebellion, Number 1 in Attitude</p>
               <button className="bg-gray-900 text-white px-4 sm:px-6 py-2 rounded-md hover:bg-gray-800 transition-colors">Shop now</button>
